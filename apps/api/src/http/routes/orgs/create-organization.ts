@@ -12,62 +12,62 @@ export async function createOrganization(app: FastifyInstance) {
     .withTypeProvider<ZodTypeProvider>()
     .register(auth)
     .post(
-        '/organization',
-        {
-            schema: {
-                tags: ['Organizations'],
-                summary: 'Create a new organization',
-                security: [{ bearerAuth: [] }],
-                body: z.object({
-                    name: z.string(),
-                    domain: z.string().nullish(),
-                    shouldAttachUsersByDomain: z.boolean().optional(),
-                }),
-                response: {
-                    201: z.object({
-                        organizationId: z.string().uuid(),
-                    }),
-                },
+      '/organizations',
+      {
+        schema: {
+          tags: ['Organizations'],
+          summary: 'Create a new organization',
+          security: [{ bearerAuth: [] }],
+          body: z.object({
+            name: z.string(),
+            domain: z.string().nullish(),
+            shouldAttachUsersByDomain: z.boolean().optional(),
+          }),
+          response: {
+            201: z.object({
+              organizationId: z.string().uuid(),
+            }),
+          },
+        },
+      },
+      async (request, reply) => {
+        const userId = await request.getCurrentUserId()
+
+        const { name, domain, shouldAttachUsersByDomain } = request.body
+
+        if (domain) {
+          const organizationByDomain = await prisma.organization.findUnique({
+            where: {
+              domain,
             },
-        },
-        async (request, reply) => {
-            const userId = await request.getCurrentUserId()
+          })
 
-            const { name, domain, shouldAttachUsersByDomain } = request.body
+          if (organizationByDomain) {
+            throw new BadRequestError(
+              'Another organization with same domain exists.'
+            )
+          }
+        }
 
-            if (domain) {
-                const organizationByDomain = await prisma.organization.findUnique({
-                    where: {
-                        domain,
-                    },
-                })
+        const organization = await prisma.organization.create({
+          data: {
+            name,
+            slug: createSlug(name),
+            domain,
+            shouldAttachUsersByDomain,
+            ownerId: userId,
+            members: {
+              create: {
+                userId,
+                role: 'ADMIN',
+              },
+            },
+          },
+        })
 
-                if (organizationByDomain) {
-                    throw new BadRequestError(
-                        'Another organization with same domain exists.',
-                    )
-                }
-            }
-
-            const organization = await prisma.organization.create({
-                data: {
-                    name,
-                    slug: createSlug(name),
-                    domain,
-                    shouldAttachUsersByDomain,
-                    ownerId: userId,
-                    members: {
-                        create: {
-                            userId,
-                            role: 'ADMIN',
-                        },
-                    },
-                },
-            })
-
-            return reply.status(201).send({
-                organizationId: organization.id,
-            })
-        },
+        return reply.status(201).send({
+          organizationId: organization.id,
+        })
+      }
     )
 }
