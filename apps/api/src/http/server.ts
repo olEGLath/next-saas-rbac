@@ -11,13 +11,13 @@ import {
   validatorCompiler,
   ZodTypeProvider,
 } from 'fastify-type-provider-zod'
-import { createAccount } from './routes/auth/create-account'
+import { createAccount } from '@/http/routes/auth/create-account'
 import { authenticateWithPassword } from './routes/auth/authenticate-with-password'
-import { getProfile } from './routes/auth/get-profile'
-import { errorHandler } from './error-handler'
-import { requestPasswordRecover } from './routes/auth/request-password-recover'
-import { resetPassword } from './routes/auth/reset-password'
-import { authenticateWithGithub } from './routes/auth/authenticate-with-github'
+import { getProfile } from '@/http/routes/auth/get-profile'
+import { errorHandler } from '@/http/error-handler'
+import { requestPasswordRecover } from '@/http/routes/auth/request-password-recover'
+import { resetPassword } from '@/http/routes/auth/reset-password'
+import { authenticateWithGithub } from '@/http/routes/auth/authenticate-with-github'
 import { env } from '@saas/env'
 import { createOrganization } from '@/http/routes/orgs/create-organization'
 import { getMembership } from '@/http/routes/orgs/get-membership'
@@ -36,6 +36,7 @@ import { updateMember } from '@/http/routes/members/update-member'
 import { removeMember } from '@/http/routes/members/remove-member'
 import { createInvite } from '@/http/routes/invites/create-invite'
 import { getInvite } from '@/http/routes/invites/get-invite'
+import { getInvites } from '@/http/routes/invites/get-invites'
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
