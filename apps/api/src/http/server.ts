@@ -98,6 +98,7 @@ app.register(updateMember)
 app.register(removeMember)
 app.register(createInvite)
 app.register(getInvite)
+app.register(getInvites)
 
 app.listen({ port: env.SERVER_PORT }).then(() => {
   console.log('Server is running on http://localhost:3333')
