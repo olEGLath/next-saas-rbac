@@ -22,6 +22,15 @@
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^3.4.1",
     "postcss": "8",
-    "typescript": "^5"
+    "typescript": "^5",
+    "@saas/eslint-config": "workspace:*",
+    "@saas/prettier": "workspace:*",
+    "@saas/tsconfig": "workspace:*"
+  },
+  "prettier": "@saas/prettier",
+  "eslintConfig": {
+    "extends": [
+      "@saas/eslint-config/next"
+    ]
   }
 }
